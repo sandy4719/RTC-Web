@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import logo from './assets/logo.png';
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -123,7 +122,7 @@ export default function App() {
         <div className="container nav-container">
           <div className="logo">
             <a href="#hero">
-              <img src={logo} alt="Round The Clock Logo" className="logo-img" />
+              <img src="/logo.png" alt="Round The Clock Logo" className="logo-img" />
             </a>
           </div>
           <div className="nav-links">
@@ -448,7 +447,7 @@ export default function App() {
         <div className="container">
           <div className="foot-grid">
             <div>
-              <img src={logo} alt="Round The Clock Logo" className="logo-img footer-logo-img" style={{ marginBottom: '15px' }} />
+              <img src="/logo.png" alt="Round The Clock Logo" className="logo-img footer-logo-img" style={{ marginBottom: '15px' }} />
               <p style={{opacity:0.8, fontSize:'0.9rem', marginBottom:'20px'}}>
                 Madurai's premium all-in-one home & lifestyle services. Your trusted partner for maintenance, repairs, and care.
               </p>
