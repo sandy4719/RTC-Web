@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import logo from './assets/rtc-brand-identity-v1.png';
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -122,8 +121,22 @@ export default function App() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <div className="logo">
-            <a href="#hero">
-              <img src={logo} alt="Round The Clock Logo" className="logo-img" />
+            <a href="#hero" style={{ display: 'flex', alignItems: 'center' }}>
+              <img 
+                src="/logo.png" 
+                alt="Round The Clock Logo" 
+                className="logo-img" 
+                style={{ display: 'block', opacity: 1, visibility: 'visible' }}
+                onError={(e) => {
+                  console.error("Logo failed to load");
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.parentElement?.querySelector('.logo-text-fallback');
+                  if (fallback) (fallback as HTMLElement).style.display = 'block';
+                }}
+              />
+              <span className="logo-text-fallback" style={{ display: 'none', fontWeight: '800', fontSize: '1.4rem', color: isScrolled ? '#1A3A8C' : '#FFFFFF', letterSpacing: '1px' }}>
+                ROUND THE CLOCK
+              </span>
             </a>
           </div>
           <div className="nav-links">
@@ -448,7 +461,20 @@ export default function App() {
         <div className="container">
           <div className="foot-grid">
             <div>
-              <img src={logo} alt="Round The Clock Logo" className="logo-img footer-logo-img" style={{ marginBottom: '15px' }} />
+              <img 
+                src="/logo.png" 
+                alt="Round The Clock Logo" 
+                className="logo-img footer-logo-img" 
+                style={{ marginBottom: '15px', display: 'block' }} 
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  const fallback = e.currentTarget.parentElement?.querySelector('.footer-logo-fallback');
+                  if (fallback) (fallback as HTMLElement).style.display = 'block';
+                }}
+              />
+              <span className="footer-logo-fallback" style={{ display: 'none', fontWeight: '800', fontSize: '1.4rem', color: '#FFFFFF', marginBottom: '20px' }}>
+                ROUND THE CLOCK
+              </span>
               <p style={{opacity:0.8, fontSize:'0.9rem', marginBottom:'20px'}}>
                 Madurai's premium all-in-one home & lifestyle services. Your trusted partner for maintenance, repairs, and care.
               </p>

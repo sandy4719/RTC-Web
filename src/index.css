@@ -111,7 +111,7 @@ button, a {
 }
 
 .navbar.scrolled .logo-img {
-  height: clamp(55px, 6vw, 85px);
+  height: clamp(45px, 6vw, 75px);
 }
 
 .nav-container {
@@ -126,9 +126,8 @@ button, a {
 }
 
 .logo-img {
-  height: clamp(70px, 10vw, 120px);
+  height: clamp(55px, 8vw, 110px);
   width: auto;
-  min-width: 100px;
   display: block;
   object-fit: contain;
 }
