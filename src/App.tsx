@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import logo from './assets/logo.png';
+import logo from './assets/rtc-full-logo.png';
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
