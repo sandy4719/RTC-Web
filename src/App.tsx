@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import logo from './assets/rtc-final-logo-v1.png';
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -122,21 +121,19 @@ export default function App() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <div className="logo">
-            <a href="#hero" style={{ display: 'flex', alignItems: 'center', gap: '12px', textDecoration: 'none' }}>
+            <a href="#hero" style={{ display: 'flex', alignItems: 'center', height: '100%' }}>
               <img 
-                src={logo} 
-                alt="Round The Clock Logo" 
+                src="/logo.png" 
+                alt="Round The Clock" 
                 className="logo-img" 
-                onError={(e) => console.error("Logo failed to load:", e)}
+                style={{ 
+                  height: '70px', 
+                  width: 'auto', 
+                  display: 'block', 
+                  minWidth: '50px',
+                  backgroundColor: 'transparent'
+                }} 
               />
-              <span style={{ 
-                color: isScrolled ? '#1A3A8C' : '#FFFFFF', 
-                fontWeight: '800', 
-                fontSize: '1.4rem',
-                letterSpacing: '0.5px'
-              }}>
-                ROUND THE CLOCK
-              </span>
             </a>
           </div>
           <div className="nav-links">
@@ -460,17 +457,13 @@ export default function App() {
       <footer className="footer">
         <div className="container">
           <div className="foot-grid">
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '15px' }}>
-                <img 
-                  src={logo} 
-                  alt="Round The Clock Logo" 
-                  className="logo-img footer-logo-img" 
-                />
-                <span style={{ color: '#FFFFFF', fontWeight: '800', fontSize: '1.2rem' }}>
-                  ROUND THE CLOCK
-                </span>
-              </div>
+            <div>
+              <img 
+                src="/logo.png" 
+                alt="Round The Clock Logo" 
+                className="logo-img footer-logo-img" 
+                style={{ marginBottom: '15px', height: '80px', width: 'auto' }} 
+              />
               <p style={{opacity:0.8, fontSize:'0.9rem', marginBottom:'20px'}}>
                 Madurai's premium all-in-one home & lifestyle services. Your trusted partner for maintenance, repairs, and care.
               </p>
