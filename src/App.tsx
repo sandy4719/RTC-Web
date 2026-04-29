@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -16,22 +17,19 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Intersection Observer for Reveal animations & Stats
+  // Stats Trigger with Intersection Observer
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          
-          if (entry.target.classList.contains('stats-section') && !statsTriggered.current) {
-            statsTriggered.current = true;
-            animateStats();
-          }
+        if (entry.isIntersecting && entry.target.classList.contains('stats-section') && !statsTriggered.current) {
+          statsTriggered.current = true;
+          animateStats();
         }
       });
     }, { threshold: 0.1 });
 
-    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    const statsEl = document.querySelector('.stats-section');
+    if (statsEl) observer.observe(statsEl);
     return () => observer.disconnect();
   }, []);
 
@@ -43,11 +41,12 @@ export default function App() {
 
     const frame = (time: number) => {
       const progress = Math.min((time - start) / duration, 1);
+      const easeOut = 1 - Math.pow(1 - progress, 3);
       setStats({
-        customers: Math.floor(progress * targets.customers),
-        services: Math.floor(progress * targets.services),
-        rating: parseFloat((progress * targets.rating).toFixed(1)),
-        availability: Math.floor(progress * targets.availability)
+        customers: Math.floor(easeOut * targets.customers),
+        services: Math.floor(easeOut * targets.services),
+        rating: parseFloat((easeOut * targets.rating).toFixed(1)),
+        availability: Math.floor(easeOut * targets.availability)
       });
       if (progress < 1) requestAnimationFrame(frame);
     };
@@ -58,7 +57,7 @@ export default function App() {
   useEffect(() => {
     const timer = setInterval(() => {
       setCarouselIndex(prev => (prev + 1) % 5);
-    }, 3500);
+    }, 4500);
     return () => clearInterval(timer);
   }, []);
 
@@ -76,7 +75,7 @@ export default function App() {
     },
     {
       title: 'Car Services', emoji: '🚗',
-      list: ['🚘 Car Pickup & Drop', '🧽 Car Cleaning at Your Location', '👨✈️ On-Demand Male & Female Driver']
+      list: ['🚘 Car Pickup & Drop', '🧽 Car Cleaning at Your Location', '👨‍✈️ On-Demand Male & Female Driver']
     },
     {
       title: 'Garden Services', emoji: '🌿',
@@ -88,7 +87,7 @@ export default function App() {
     },
     {
       title: 'Support Services', emoji: '🏗️',
-      list: ['👷 Daily Labour / Helper', '🛡️ Security Services / Watchman', '👩⚕️ Home Nurse']
+      list: ['👷 Daily Labour / Helper', '🛡️ Security Services / Watchman', '👩‍⚕️ Home Nurse']
     }
   ];
 
@@ -106,6 +105,15 @@ export default function App() {
     { n: 'Lakshmi D.', l: 'Madurai', r: 'Pet Grooming', t: 'My dog looked amazing. Very gentle and caring staff.', i: 'LD' },
     { n: 'Selvam P.', l: 'Madurai', r: 'Plumbing', t: 'Fixed the leaking pipe within an hour. Great service!', i: 'SP' }
   ];
+
+  const fadeUp = {
+    hidden: { opacity: 0, y: 30 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.6, ease: "easeOut" } }
+  };
+
+  const stagger = {
+    visible: { transition: { staggerChildren: 0.1 } }
+  };
 
   return (
     <div className="site-wrapper">
@@ -128,45 +136,79 @@ export default function App() {
           <div className="hamburger" onClick={() => setIsMenuOpen(!isMenuOpen)}>
             {isMenuOpen ? '✕' : '☰'}
           </div>
-          <div className={`mobile-menu ${isMenuOpen ? 'active' : ''}`}>
-            <a href="#hero" onClick={() => setIsMenuOpen(false)}>Home</a>
-            <a href="#services" onClick={() => setIsMenuOpen(false)}>Services</a>
-            <a href="#how-it-works" onClick={() => setIsMenuOpen(false)}>How It Works</a>
-            <a href="#reviews" onClick={() => setIsMenuOpen(false)}>Reviews</a>
-            <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
-            <a href="tel:+919600344322" className="btn-book" style={{marginTop: '10px'}}>📞 Book Now</a>
-          </div>
+          <AnimatePresence>
+            {isMenuOpen && (
+              <motion.div 
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="mobile-menu active"
+              >
+                <a href="#hero" onClick={() => setIsMenuOpen(false)}>Home</a>
+                <a href="#services" onClick={() => setIsMenuOpen(false)}>Services</a>
+                <a href="#how-it-works" onClick={() => setIsMenuOpen(false)}>How It Works</a>
+                <a href="#reviews" onClick={() => setIsMenuOpen(false)}>Reviews</a>
+                <a href="#contact" onClick={() => setIsMenuOpen(false)}>Contact</a>
+                <a href="tel:+919600344322" className="btn-book" style={{marginTop: '10px'}}>📞 Book Now</a>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </nav>
 
       {/* Hero */}
       <section id="hero" className="hero">
         <div className="container">
-          <div className="hero-content">
+          <motion.div 
+            initial="hidden"
+            animate="visible"
+            variants={fadeUp}
+            className="hero-content"
+          >
             <h1>Home Services You Can Trust</h1>
-            <p>Install • Service • Maintenance — Round the Clock, Help is Here</p>
+            <p className="hero-subheading">Install • Service • Maintenance</p>
             <div className="hero-btns">
               <a href="#services" className="btn-hero-primary">Explore Services</a>
               <a href="tel:+919600344322" className="btn-hero-outline">📞 +91 96003 44322</a>
             </div>
-            <div className="emoji-row">
-              <span>⚡</span><span>🔧</span><span>🧹</span><span>🚗</span>
-              <span>🐕</span><span>🌿</span><span>💇</span><span>🏠</span>
-            </div>
-          </div>
+            <motion.div variants={stagger} className="emoji-row">
+              {['⚡','🔧','🧹','🚗','🐕','🌿','💇','🏠'].map((e, i) => (
+                <motion.span 
+                  key={i} 
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.5 + (i * 0.1), type: 'spring' }}
+                >
+                  {e}
+                </motion.span>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Services */}
-      <section id="services" className="section reveal">
+      <section id="services" className="section">
         <div className="container">
-          <div style={{textAlign:'center', marginBottom:'50px'}}>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{textAlign:'center', marginBottom:'50px'}}
+          >
             <h2>Our Services</h2>
             <p style={{color:'var(--text-light)'}}>Everything your home needs, anytime</p>
-          </div>
-          <div className="services-grid">
+          </motion.div>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="services-grid"
+          >
             {categories.map((cat, i) => (
-              <div key={i} className="cat-card">
+              <motion.div key={i} variants={fadeUp} className="cat-card">
                 <div className="cat-header">
                   <span style={{fontSize:'1.5rem'}}>{cat.emoji}</span>
                   <span style={{fontWeight:'700'}}>{cat.title}</span>
@@ -177,71 +219,113 @@ export default function App() {
                 <div className="cat-footer">
                   <a href="#contact" className="btn-card-book">Book Now →</a>
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Home Improvement */}
-      <section className="section reveal" style={{background:'var(--bg-light-blue)'}}>
+      <section className="section" style={{background:'var(--bg-light-blue)'}}>
         <div className="container">
-          <div style={{textAlign:'center', marginBottom:'50px'}}>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{textAlign:'center', marginBottom:'50px'}}
+          >
             <h2>🏠 Home Improvement</h2>
             <p style={{color:'var(--text-light)'}}>Transform your space with expert hands</p>
-          </div>
-          <div className="imp-grid">
+          </motion.div>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="imp-grid"
+          >
             {improvements.map((imp, i) => (
-              <div key={i} className="imp-card">
-                <div className="imp-icon">{imp.icon}</div>
+              <motion.div key={i} variants={fadeUp} className="imp-card hover-lift">
+                <motion.div 
+                  whileHover={{ rotate: 15 }}
+                  className="imp-icon"
+                >
+                  {imp.icon}
+                </motion.div>
                 <h4 style={{marginBottom:'10px'}}>{imp.name}</h4>
-                <p style={{fontSize:'0.9rem', color:'var(--text-light)'}}>{imp.desc}</p>
-              </div>
+                <p style={{fontSize:'0.9rem', color:'var(--text-light)', marginBottom:'15px'}}>{imp.desc}</p>
+                <a href="#contact" className="btn-card-book" style={{fontSize: '0.8rem', padding: '6px 12px', marginTop: 'auto'}}>Book Now</a>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       {/* Monthly Packages */}
-      <section className="packages-banner reveal">
+      <motion.section 
+        initial={{ scale: 0.9, opacity: 0 }}
+        whileInView={{ scale: 1, opacity: 1 }}
+        viewport={{ once: true }}
+        className="packages-banner"
+      >
         <div className="container">
           <h2>📅 Monthly / Annual Maintenance Contract</h2>
           <p>Save More on Regular Services — Affordable & Quality</p>
-          <a href="#contact" className="btn-quote">Get a Quote →</a>
+          <motion.a 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            href="#contact" 
+            className="btn-quote"
+          >
+            Get a Quote →
+          </motion.a>
         </div>
-      </section>
+      </motion.section>
 
       {/* How it Works */}
-      <section id="how-it-works" className="section reveal">
+      <section id="how-it-works" className="section">
         <div className="container">
-          <div style={{textAlign:'center', marginBottom:'60px'}}>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{textAlign:'center', marginBottom:'60px'}}
+          >
             <h2>How It Works</h2>
-          </div>
-          <div className="how-grid">
-            <div className="step-card">
+          </motion.div>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={stagger}
+            className="how-grid"
+          >
+            <motion.div variants={fadeUp} className="step-card">
               <div className="step-num">1</div>
               <div style={{fontSize:'3rem', marginBottom:'15px'}}>📱</div>
               <h4 style={{marginBottom:'10px'}}>Call or WhatsApp Us</h4>
               <p style={{color:'var(--text-light)', fontSize:'0.9rem'}}>Tell us what service you need and your location.</p>
-            </div>
-            <div className="step-card">
+            </motion.div>
+            <motion.div variants={fadeUp} className="step-card">
               <div className="step-num">2</div>
               <div style={{fontSize:'3rem', marginBottom:'15px'}}>📅</div>
               <h4 style={{marginBottom:'10px'}}>Choose a Time Slot</h4>
               <p style={{color:'var(--text-light)', fontSize:'0.9rem'}}>We schedule at your convenience, same day available.</p>
-            </div>
-            <div className="step-card">
+            </motion.div>
+            <motion.div variants={fadeUp} className="step-card">
               <div className="step-num">3</div>
               <div style={{fontSize:'3rem', marginBottom:'15px'}}>✅</div>
               <h4 style={{marginBottom:'10px'}}>Expert at Your Door</h4>
               <p style={{color:'var(--text-light)', fontSize:'0.9rem'}}>Vetted professionals arrive and get the job done right.</p>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </section>
 
       {/* Stats */}
-      <section className="section stats stats-section reveal">
+      <section className="section stats stats-section">
         <div className="container">
           <div className="stats-grid">
             <div><span className="stat-num">{stats.customers.toLocaleString()}+</span><p>Happy Customers</p></div>
@@ -253,13 +337,17 @@ export default function App() {
       </section>
 
       {/* Testimonials */}
-      <section id="reviews" className="section reveal" style={{background:'var(--bg-light-blue)'}}>
+      <section id="reviews" className="section" style={{background:'var(--bg-light-blue)'}}>
         <div className="container">
           <div style={{textAlign:'center', marginBottom:'50px'}}>
             <h2>What Our Customers Say</h2>
           </div>
           <div className="carousel-wrapper">
-            <div className="carousel-track" style={{ transform: `translateX(calc(-${carouselIndex * 100}% - ${carouselIndex * 20}px))` }}>
+            <motion.div 
+              animate={{ x: `calc(-${carouselIndex * 100}% - ${carouselIndex * 20}px)` }}
+              transition={{ type: 'spring', damping: 20, stiffness: 100 }}
+              className="carousel-track"
+            >
               {reviews.map((rev, i) => (
                 <div key={i} className="test-card">
                   <div className="avatar-row">
@@ -274,7 +362,7 @@ export default function App() {
                   <p style={{fontStyle:'italic', color:'var(--text-light)'}}>"{rev.t}"</p>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
           <div className="carousel-controls">
             <button className="btn-ctrl" onClick={prevTestimonial}>←</button>
@@ -284,76 +372,72 @@ export default function App() {
       </section>
 
       {/* Contact & Booking */}
-      <section id="contact" className="section reveal">
+      <section id="contact" className="section">
         <div className="container">
-          <div style={{textAlign:'center', marginBottom:'50px'}}>
+          <motion.div 
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            variants={fadeUp}
+            style={{textAlign:'center', marginBottom:'50px'}}
+          >
             <h2>Ready to Book? Get in Touch!</h2>
-          </div>
-          <div className="contact-grid">
-            <div className="contact-info">
-              <div style={{display:'flex', gap:'15px', marginBottom:'25px'}}>
-                <div style={{fontSize:'1.5rem'}}>📍</div>
+          </motion.div>
+          <div className="contact-centered-wrapper">
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={fadeUp}
+              className="contact-info-centered"
+            >
+              <div className="contact-item-centered">
+                <div className="contact-icon">📍</div>
                 <div>
                   <p style={{fontWeight:'700'}}>Address</p>
                   <p style={{color:'var(--text-light)', fontSize:'0.95rem'}}>Plot No.197, 1st Floor, N.M.S. Nagar, Madurai – 625014</p>
+                  <a 
+                    href="https://www.google.com/maps/dir//Round+The+Clock,+N+M+Sivanathan+Nagar,+Madurai,+Tamil+Nadu+625014/@13.041664,80.1308672,14z/data=!3m1!4b1!4m8!4m7!1m0!1m5!1m1!1s0x3b00c7e5ea1a61fb:0x4f9a19233821770!2m2!1d78.1573929!2d9.9817731?entry=ttu&g_ep=EgoyMDI2MDQyNi4wIKXMDSoASAFQAw%3D%3D" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'inline-block', 
+                      marginTop: '8px', 
+                      color: 'var(--primary-blue)', 
+                      fontSize: '0.9rem', 
+                      fontWeight: '600'
+                    }}
+                  >
+                    🗺️ Get Directions
+                  </a>
                 </div>
               </div>
-              <div style={{display:'flex', gap:'15px', marginBottom:'25px'}}>
-                <div style={{fontSize:'1.5rem'}}>📞</div>
+              <div className="contact-item-centered">
+                <div className="contact-icon">📞</div>
                 <div>
                   <p style={{fontWeight:'700'}}>Call Us</p>
                   <a href="tel:+919600344322" style={{color:'var(--primary-blue)', fontWeight:'600'}}>+91 96003 44322</a>
                 </div>
               </div>
-              <div style={{display:'flex', gap:'15px', marginBottom:'25px'}}>
-                <div style={{fontSize:'1.5rem'}}>💬</div>
+              <div className="contact-item-centered">
+                <div className="contact-icon">💬</div>
                 <div>
                   <p style={{fontWeight:'700'}}>WhatsApp</p>
                   <a href="https://wa.me/919600344322" target="_blank" style={{color:'var(--primary-blue)', fontWeight:'600'}}>+91 96003 44322</a>
                 </div>
               </div>
-              <div style={{display:'flex', gap:'15px', marginBottom:'25px'}}>
-                <div style={{fontSize:'1.5rem'}}>📧</div>
+              <div className="contact-item-centered">
+                <div className="contact-icon">📧</div>
                 <div>
                   <p style={{fontWeight:'700'}}>Email</p>
                   <a href="mailto:rtccorporatellp@gmail.com" style={{color:'var(--primary-blue)', fontWeight:'600'}}>rtccorporatellp@gmail.com</a>
                 </div>
               </div>
-              <div style={{marginTop:'20px', display:'flex', gap:'20px'}}>
-                <a href="#" style={{fontSize:'1.5rem'}}>📘</a>
-                <a href="#" style={{fontSize:'1.5rem'}}>📸</a>
+              <div style={{marginTop:'30px', display:'flex', gap:'20px', justifyContent: 'center'}}>
+                <a href="#" className="social-link" style={{fontSize:'1.5rem'}}>📘</a>
+                <a href="#" className="social-link" style={{fontSize:'1.5rem'}}>📸</a>
               </div>
-            </div>
-            
-            <div className="booking-form">
-              <form onSubmit={e => { e.preventDefault(); alert('Thank you! Our team will contact you shortly.'); }}>
-                <div className="form-group">
-                  <label>Full Name</label>
-                  <input type="text" placeholder="Your Name" required />
-                </div>
-                <div className="form-group">
-                  <label>Phone Number</label>
-                  <input type="tel" placeholder="Mobile Number" required />
-                </div>
-                <div className="form-group">
-                  <label>Service Needed</label>
-                  <select required>
-                    <option value="">Select a Category</option>
-                    {categories.map(c => <option key={c.title}>{c.title}</option>)}
-                    <option>Home Improvement</option>
-                  </select>
-                </div>
-                <div className="form-group">
-                  <label>Preferred Date</label>
-                  <input type="date" />
-                </div>
-                <div className="form-group">
-                  <label>Message</label>
-                  <textarea rows={4} placeholder="Describe your requirement..."></textarea>
-                </div>
-                <button type="submit" className="btn-submit">📅 Request Booking</button>
-              </form>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
