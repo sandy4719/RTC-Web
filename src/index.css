@@ -128,8 +128,10 @@ button, a {
 .logo-img {
   height: clamp(55px, 8vw, 110px);
   width: auto;
+  min-width: 150px;
   display: block;
   object-fit: contain;
+  background: transparent;
 }
 
 .footer-logo-img {
