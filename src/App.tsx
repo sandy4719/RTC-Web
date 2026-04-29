@@ -113,8 +113,9 @@ export default function App() {
       <nav className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="container nav-container">
           <div className="logo">
-            <span className="logo-main">🕐 Round The Clock</span>
-            <span className="logo-tagline">Help is Here</span>
+            <a href="#hero">
+              <img src="/logo.png" alt="Round The Clock Logo" className="logo-img" />
+            </a>
           </div>
           <div className="nav-links">
             <a href="#hero">Home</a>
@@ -362,7 +363,7 @@ export default function App() {
         <div className="container">
           <div className="foot-grid">
             <div>
-              <span className="logo-main" style={{color:'white', marginBottom:'15px'}}>🕐 Round The Clock</span>
+              <img src="/logo.png" alt="Round The Clock Logo" className="logo-img footer-logo-img" style={{ marginBottom: '15px' }} />
               <p style={{opacity:0.8, fontSize:'0.9rem', marginBottom:'20px'}}>
                 Madurai's premium all-in-one home & lifestyle services. Your trusted partner for maintenance, repairs, and care.
               </p>
